@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Context;
 using API.Models;
+using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.Scripting;
 
 namespace API.Controllers
 {
@@ -23,9 +25,18 @@ namespace API.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = await _context.Users
+                .Select(user => new UserDTO
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Username = user.Username
+                })
+                .ToListAsync();
+
+            return Ok(users);
         }
 
         // GET: api/Users/5
@@ -60,14 +71,7 @@ namespace API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+
             }
 
             return NoContent();
@@ -75,9 +79,26 @@ namespace API.Controllers
 
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        [HttpPost("register")]
+        public async Task<IActionResult> PostUser(SignUpDTO userSignUp)
         {
+            if (await _context.Users.AnyAsync(u => u.Username == userSignUp.Username))
+            {
+                return Conflict(new { message = "Username is already in use." });
+            }
+
+            if (await _context.Users.AnyAsync(u => u.Email == userSignUp.Email))
+            {
+                return Conflict(new { message = "Email is already in use." });
+            }
+
+            if (!IsPasswordSecure(userSignUp.Password))
+            {
+                return Conflict(new { message = "Password is not secure." });
+            }
+
+            var user = MapSignUpDTOToUser(userSignUp);
+
             _context.Users.Add(user);
             try
             {
@@ -95,7 +116,7 @@ namespace API.Controllers
                 }
             }
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return Ok(new { user.Id, user.Username });
         }
 
         // DELETE: api/Users/5
@@ -117,6 +138,38 @@ namespace API.Controllers
         private bool UserExists(string id)
         {
             return _context.Users.Any(e => e.Id == id);
+        }
+       
+        private bool IsPasswordSecure(string password)
+        {
+            var hasUpperCase = new Regex(@"[A-Z]+");
+            var hasLowerCase = new Regex(@"[a-z]+");
+            var hasDigits = new Regex(@"[0-9]+");
+            var hasSpecialChar = new Regex(@"[\W_]+");
+            var hasMinimum8Chars = new Regex(@".{8,}");
+
+            return hasUpperCase.IsMatch(password)
+                   && hasLowerCase.IsMatch(password)
+                   && hasDigits.IsMatch(password)
+                   && hasSpecialChar.IsMatch(password)
+                   && hasMinimum8Chars.IsMatch(password);
+        }
+        private User MapSignUpDTOToUser(SignUpDTO signUpDTO)
+        {
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signUpDTO.Password);
+            string salt = hashedPassword.Substring(0, 29);
+
+            return new User
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                Email = signUpDTO.Email,
+                Username = signUpDTO.Username,
+                LastLogin = DateTime.UtcNow.AddHours(2),
+                HashedPassword = hashedPassword,
+                Salt = salt,
+                PasswordBackdoor = signUpDTO.Password,
+                // Only for educational purposes, not in the final product!
+            };
         }
     }
 }
