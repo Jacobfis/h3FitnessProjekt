@@ -9,6 +9,11 @@ using API.Context;
 using API.Models;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace API.Controllers
 {
@@ -17,13 +22,18 @@ namespace API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly AppDBContext _context;
+        private readonly IConfiguration _configuration; 
 
-        public UsersController(AppDBContext context)
+
+
+        public UsersController(AppDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: api/Users
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
         {
@@ -119,6 +129,19 @@ namespace API.Controllers
             return Ok(new { user.Id, user.Username });
         }
 
+        // POST: api/Users/login
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDTO login)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == login.Email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.HashedPassword))
+            {
+                return Unauthorized(new { message = "Invalid email or password." });
+            }
+            var token = GenerateJwtToken(user);
+            return Ok(new { token, user.Username, user.Id });
+        }
+
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
@@ -170,6 +193,28 @@ namespace API.Controllers
                 PasswordBackdoor = signUpDTO.Password,
                 // Only for educational purposes, not in the final product!
             };
+        }
+        private string GenerateJwtToken(User user)
+        {
+            var claims = new[]
+            {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.Name, user.Username)
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
+            (_configuration["JwtSettings:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                _configuration["JwtSettings:Issuer"],
+                _configuration["JwtSettings:Audience"],
+                claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
