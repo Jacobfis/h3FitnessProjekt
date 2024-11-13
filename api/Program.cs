@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace API
 {
@@ -21,6 +22,14 @@ namespace API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDataProtection().UseCryptographicAlgorithms(
+           new AuthenticatedEncryptorConfiguration
+           {
+               EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+               ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+           });
+
 
             IConfiguration Configuration = builder.Configuration;
             var Connection = Configuration.GetConnectionString("DefaultConnection") ?? Environment.GetEnvironmentVariable("DefaultConnection");
@@ -55,12 +64,9 @@ namespace API
             {
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidIssuer = Configuration["JwtSettings:Issuer"],
-                    ValidAudience = Configuration["JwtSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey
-                    (
-                    Encoding.UTF8.GetBytes(Configuration["JwtSettings:Key"])
-                    ),
+                    ValidIssuer = Configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer"),
+                    ValidAudience = Configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience"),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key"))),
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
