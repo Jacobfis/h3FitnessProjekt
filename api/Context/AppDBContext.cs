@@ -48,6 +48,7 @@ namespace API.Context
 
             }
         }
+        public DbSet<API.Models.Device> Device { get; set; } = default!;
     }
 
 }
