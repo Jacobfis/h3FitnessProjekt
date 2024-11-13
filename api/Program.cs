@@ -1,4 +1,6 @@
 using API.Context;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,6 +23,10 @@ namespace API
             builder.Services.AddSwaggerGen();
 
             IConfiguration Configuration = builder.Configuration;
+            var Connection = Configuration.GetConnectionString("DefaultConnection") ?? Environment.GetEnvironmentVariable("DefaultConnection");
+            var issuer = Configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer");
+            var audience = Configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience");
+            var key = Configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key");
 
             string connectionString = Configuration.GetConnectionString("DefaultConnection")
             ?? Environment.GetEnvironmentVariable("DefaultConnection");
@@ -73,7 +79,7 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseAuthorization();
 
             app.MapControllers();
 
