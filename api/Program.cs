@@ -17,19 +17,16 @@ namespace API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDataProtection().UseCryptographicAlgorithms(
-           new AuthenticatedEncryptorConfiguration
-           {
-               EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
-               ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
-           });
-
+                new AuthenticatedEncryptorConfiguration
+                {
+                    EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+                    ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+                });
 
             IConfiguration Configuration = builder.Configuration;
             var Connection = Configuration.GetConnectionString("DefaultConnection") ?? Environment.GetEnvironmentVariable("DefaultConnection");
@@ -43,15 +40,16 @@ namespace API
             builder.Services.AddDbContext<AppDBContext>(options =>
                     options.UseNpgsql(connectionString));
 
+            // Add CORS policy to allow any origin, method, and header
             builder.Services.AddCors(options =>
             {
-            options.AddPolicy("AllowAll",
-                builder =>
-                {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader();
-                });
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()   // Allow any origin
+                               .AllowAnyMethod()   // Allow any HTTP method (GET, POST, etc.)
+                               .AllowAnyHeader();  // Allow any headers
+                    });
             });
 
             // Configure JWT Authentication
@@ -76,18 +74,16 @@ namespace API
 
             var app = builder.Build();
 
-            app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials());
+            // Use the CORS policy defined earlier
+            app.UseCors("AllowAll");
+
             // Configure the HTTP request pipeline.
-
             app.UseSwagger();
-                app.UseSwaggerUI();
-
+            app.UseSwaggerUI();
 
             //app.UseHttpsRedirection();
             app.MapGet("/", () => Results.Ok("API is running"));
 
-
-            app.UseAuthorization();
             app.UseAuthorization();
 
             app.MapControllers();
