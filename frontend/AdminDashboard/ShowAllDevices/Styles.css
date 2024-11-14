@@ -1,0 +1,81 @@
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #f9f9f9;
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    background-color: #333;
+    width: 100%;
+}
+
+header button {
+    color: #fff;
+    background-color: #007BFF;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+header button:hover {
+    background-color: #0056b3;
+}
+
+main {
+    width: 90%;
+    max-width: 800px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+}
+
+/* Device list styling */
+.device-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.device-item {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.device-item h3 {
+    margin: 0;
+    color: #333;
+}
+
+.device-item p {
+    color: #666;
+}
+
+.delete-device-button {
+    margin-top: 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-device-button:hover {
+    background-color: #c82333;
+}
+

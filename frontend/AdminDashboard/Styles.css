@@ -1,0 +1,70 @@
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 24px 12px;
+  text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+  background-color: #111;
+}
+
+#userList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px; /* Afstand mellem kortene */
+  justify-content: center; /* Centrer kortene horisontalt */
+}
+
+.user-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  width: 200px; /* Fast bredde til hvert kort */
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center; /* Centrer tekst inden i kortet */
+  display: flex;
+  flex-direction: column; /* Sørg for, at indholdet placeres lodret */
+  align-items: center; /* Centrer indholdet horisontalt */
+}
+
+.user-card h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.user-card p {
+  margin: 5px 0;
+}
+
+.delete-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+}
+
+
+

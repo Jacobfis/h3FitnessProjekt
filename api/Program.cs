@@ -76,9 +76,10 @@ namespace API
 
             var app = builder.Build();
 
+            app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials());
             // Configure the HTTP request pipeline.
 
-                app.UseSwagger();
+            app.UseSwagger();
                 app.UseSwaggerUI();
 
 
