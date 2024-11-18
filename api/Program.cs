@@ -75,15 +75,13 @@ namespace API
 
             var app = builder.Build();
 
-
+            app.UseHttpsRedirection();
             app.UseCors("AllowAll");
 
             // Configure the HTTP request pipeline.
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            //Uncomment if using HTTPS
-            app.UseHttpsRedirection();
 
             // Apply Authentication & Authorization
             app.UseAuthentication();
