@@ -203,13 +203,12 @@ namespace API.Controllers
         new Claim(ClaimTypes.Name, user.Username)
     };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-            (_configuration["JwtSettings:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                _configuration["JwtSettings:Issuer"],
-                _configuration["JwtSettings:Audience"],
+                _configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer"),
+                _configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience"),
                 claims,
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds);
