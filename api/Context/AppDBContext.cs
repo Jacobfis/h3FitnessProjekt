@@ -49,6 +49,8 @@ namespace API.Context
             }
         }
         public DbSet<API.Models.Device> Device { get; set; } = default!;
+
+        public DbSet<API.Models.ActivityLog> ActivityLogs { get; set; }
     }
 
 }
