@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using API.Models; // For din ActivityLog model og DTO
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
+using API.Models;
 using API.Context;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -17,7 +17,7 @@ namespace API.Controllers
             _context = context;
         }
 
-        // POST: api/activitylog
+        // POST: api/ActivityLog
         [HttpPost]
         public async Task<IActionResult> PostActivityLog([FromBody] ActivityLogCreateDTO activityLogDto)
         {
@@ -26,33 +26,34 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Mapper DTO til model
+            // Map DTO til model
             var activityLog = new ActivityLog
             {
                 Id = activityLogDto.Id,
                 Date = activityLogDto.Date,
                 Steps = activityLogDto.Steps,
                 Distance = activityLogDto.Distance,
+                Calories = activityLogDto.Calories,
                 Duration = activityLogDto.Duration,
                 Type = activityLogDto.Type
             };
 
-            // Gem data i databasen
+            // Gem i databasen
             _context.ActivityLogs.Add(activityLog);
             await _context.SaveChangesAsync();
 
-            // Returner det gemte objekt med status 201 (Created)
-            return CreatedAtAction("GetActivityLog", new { id = activityLog.Id }, activityLog);
+            // Returner det gemte objekt med status 201 Created
+            return CreatedAtAction(nameof(GetActivityLog), new { id = activityLog.Id }, activityLog);
         }
 
-        // GET: api/activitylog
+        // GET: api/ActivityLog
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ActivityLog>>> GetActivityLogs()
         {
             return await _context.ActivityLogs.ToListAsync();
         }
 
-        // GET: api/activitylog/{id}
+        // GET: api/ActivityLog/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<ActivityLog>> GetActivityLog(string id)
         {
