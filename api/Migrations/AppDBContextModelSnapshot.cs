@@ -27,6 +27,9 @@ namespace API.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<double>("Calories")
+                        .HasColumnType("double precision");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,6 +19,7 @@ namespace API.Migrations
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Steps = table.Column<int>(type: "integer", nullable: false),
                     Distance = table.Column<double>(type: "double precision", nullable: false),
+                    Calories = table.Column<double>(type: "double precision", nullable: false),
                     Duration = table.Column<TimeSpan>(type: "interval", nullable: false),
                     Type = table.Column<string>(type: "text", nullable: false)
                 },

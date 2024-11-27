@@ -26,6 +26,9 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Konverter ticks til TimeSpan
+            TimeSpan duration = TimeSpan.FromTicks(activityLogDto.Duration.Ticks);
+
             // Map DTO til model
             var activityLog = new ActivityLog
             {
@@ -34,7 +37,7 @@ namespace API.Controllers
                 Steps = activityLogDto.Steps,
                 Distance = activityLogDto.Distance,
                 Calories = activityLogDto.Calories,
-                Duration = activityLogDto.Duration,
+                Duration = duration,
                 Type = activityLogDto.Type
             };
 
@@ -42,9 +45,9 @@ namespace API.Controllers
             _context.ActivityLogs.Add(activityLog);
             await _context.SaveChangesAsync();
 
-            // Returner det gemte objekt med status 201 Created
             return CreatedAtAction(nameof(GetActivityLog), new { id = activityLog.Id }, activityLog);
         }
+
 
         // GET: api/ActivityLog
         [HttpGet]

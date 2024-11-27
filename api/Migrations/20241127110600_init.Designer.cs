@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20241121085449_initial")]
-    partial class initial
+    [Migration("20241127110600_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,6 +29,9 @@ namespace API.Migrations
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
+
+                    b.Property<double>("Calories")
+                        .HasColumnType("double precision");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");

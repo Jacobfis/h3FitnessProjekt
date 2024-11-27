@@ -2,6 +2,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Arduino_LSM9DS1.h>
+#include <Arduino_LSM6DS3.h>
 #include <WiFiNINA.h>
 #include <ArduinoHttpClient.h>
 
@@ -78,13 +79,15 @@ void connectToWiFi() {
 //Forstår dette :D HELLS YES W
 void sendToAPI(int steps, float distance, float calories) {
   if (WiFi.status() == WL_CONNECTED) {
-    String jsonPayload = "{\"id\":\"123\","
-                         "\"date\":\"" + String("2024-11-25T00:00:00Z") + "\","
-                         "\"steps\":" + String(steps) + ","
-                         "\"distance\":" + String(distance) + ","
-                         "\"calories\":" + String(calories) + ","
-                         "\"duration\":\"00:10:00\","
-                         "\"type\":\"Walking\"}";
+    String jsonPayload = "{\"activityLogDto\": {"
+                     "\"id\": \"123\","
+                     "\"date\": \"2024-11-25T00:00:00Z\","
+                     "\"steps\": " + String(steps) + ","
+                     "\"distance\": " + String(distance) + ","
+                     "\"duration\": \"00:10:00\","
+                     "\"type\": \"Walking\""
+                     "}}";
+
 
     client.beginRequest();
     client.post("/api/ActivityLog");
