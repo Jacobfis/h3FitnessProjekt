@@ -2,7 +2,7 @@
 document.getElementById("registerForm").addEventListener("submit", function(event) {
     event.preventDefault(); // Forhindrer formularen i at sende normalt
 
-    const name = document.getElementById("newName").value;
+    const username = document.getElementById("newName").value;
     const email = document.getElementById("newEmail").value;
     const password = document.getElementById("newPassword").value;
 
@@ -11,7 +11,7 @@ document.getElementById("registerForm").addEventListener("submit", function(even
     registerHeaders.append("Content-Type", "application/json");
 
     const registerData = JSON.stringify({
-        name: name,
+        username: username,
         email: email,
         password: password
     });
@@ -24,7 +24,7 @@ document.getElementById("registerForm").addEventListener("submit", function(even
     };
 
     // Send registrerings-anmodningen til backend
-    fetch("https://h3-fitsmart2024.onrender.com/api/Users", requestOptions)
+    fetch("https://h3-fitsmart2024.onrender.com/api/Users/register", requestOptions)
         .then(response => {
             if (!response.ok) {
                 // Håndterer fejlstatuskoder (fx 400, 401, 500)
