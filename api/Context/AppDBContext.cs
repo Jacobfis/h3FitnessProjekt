@@ -13,6 +13,7 @@ namespace API.Context
             }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<UserDevice> UserDevice { get; set; }
 
         public override int SaveChanges()
         {

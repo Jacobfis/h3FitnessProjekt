@@ -114,6 +114,27 @@ namespace API.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("API.Models.UserDevice", b =>
+                {
+                    b.Property<string>("id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("deviceId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("userId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("deviceId");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("UserDevice");
+                });
+
             modelBuilder.Entity("API.Models.Device", b =>
                 {
                     b.HasOne("API.Models.Device", "Devices")
@@ -123,6 +144,23 @@ namespace API.Migrations
                         .IsRequired();
 
                     b.Navigation("Devices");
+                });
+
+            modelBuilder.Entity("API.Models.UserDevice", b =>
+                {
+                    b.HasOne("API.Models.Device", "device")
+                        .WithMany()
+                        .HasForeignKey("deviceId");
+
+                    b.HasOne("API.Models.User", "user")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("device");
+
+                    b.Navigation("user");
                 });
 #pragma warning restore 612, 618
         }
