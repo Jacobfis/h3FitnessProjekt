@@ -129,7 +129,7 @@ namespace API.Controllers
             var user = await _context.Users.FindAsync(dto.userId);
             if (user == null) throw new ArgumentException("User not found");
 
-            var device = await _context.Device.FindAsync(dto.deviceId);
+            var device = await _context.Devices.FindAsync(dto.deviceId);
             if (device == null) throw new ArgumentException("Device not found");
 
             return new UserDevice
