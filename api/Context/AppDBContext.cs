@@ -13,7 +13,7 @@ namespace API.Context
             }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Device> Device { get; set; }
+        public DbSet<Device> Devices { get; set; }
         public DbSet<UserDevice> UserDevice { get; set; }
 
 
