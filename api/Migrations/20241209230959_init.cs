@@ -35,18 +35,11 @@ namespace API.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     DeviceId = table.Column<string>(type: "text", nullable: false),
                     DeviceName = table.Column<string>(type: "text", nullable: false),
-                    DevicesId = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Device", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Device_Device_DevicesId",
-                        column: x => x.DevicesId,
-                        principalTable: "Device",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -90,11 +83,6 @@ namespace API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Device_DevicesId",
-                table: "Device",
-                column: "DevicesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserDevice_deviceId",

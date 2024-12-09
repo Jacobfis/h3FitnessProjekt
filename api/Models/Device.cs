@@ -4,13 +4,15 @@
     {
         public string DeviceId { get; set; }
         public string DeviceName { get; set; }
-        public Device Devices { get; set; }
     }
+
     public class DeviceDataCreateDTO
     {
+        public string Id {  get; set; }
         public string DeviceId { get; set; }
         public string DeviceName { get; set; }
     }
+
     public class DeviceDataReadDTO
     {
         public string DeviceId { get; set; }

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Context;
 using API.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace API.Controllers
 {
@@ -23,14 +21,21 @@ namespace API.Controllers
 
         // GET: api/Devices
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Device>>> GetDevice()
+        [Produces("application/json")]
+        public async Task<ActionResult<IEnumerable<DeviceDataReadDTO>>> GetDevices()
         {
-            return await _context.Device.ToListAsync();
+            var devices = await _context.Device.ToListAsync();
+            return devices.Select(d => new DeviceDataReadDTO
+            {
+                DeviceId = d.DeviceId,
+                DeviceName = d.DeviceName
+            }).ToList();
         }
 
-        // GET: api/Devices/5
+        // GET: api/Devices/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Device>> GetDevice(string id)
+        [Produces("application/json")]
+        public async Task<ActionResult<DeviceDataReadDTO>> GetDevice(string id)
         {
             var device = await _context.Device.FindAsync(id);
 
@@ -39,55 +44,37 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            return device;
-        }
-
-        // PUT: api/Devices/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDevice(string id, Device device)
-        {
-            if (id != device.Id)
+            return new DeviceDataReadDTO
             {
-                return BadRequest();
-            }
-
-            _context.Entry(device).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DeviceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+                DeviceId = device.DeviceId,
+                DeviceName = device.DeviceName
+            };
         }
 
         // POST: api/Devices
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Device>> PostDevice(Device device)
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<ActionResult<DeviceDataReadDTO>> PostDevice([FromBody] DeviceDataCreateDTO deviceDto)
         {
+            // Opretter en ny Device med automatisk genereret Id fra Common
+            var device = new Device
+            {
+                DeviceId = deviceDto.DeviceId,
+                DeviceName = deviceDto.DeviceName
+            };
+
             _context.Device.Add(device);
+
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (DeviceExists(device.Id))
+                if (DeviceExists(device.DeviceId))
                 {
-                    return Conflict();
+                    return Conflict("A device with this ID already exists.");
                 }
                 else
                 {
@@ -95,10 +82,15 @@ namespace API.Controllers
                 }
             }
 
-            return CreatedAtAction("GetDevice", new { id = device.Id }, device);
+            return CreatedAtAction(nameof(GetDevice), new { id = device.Id }, new DeviceDataReadDTO
+            {
+                DeviceId = device.DeviceId,
+                DeviceName = device.DeviceName
+            });
         }
 
-        // DELETE: api/Devices/5
+
+        // DELETE: api/Devices/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDevice(string id)
         {
@@ -116,7 +108,7 @@ namespace API.Controllers
 
         private bool DeviceExists(string id)
         {
-            return _context.Device.Any(e => e.Id == id);
+            return _context.Device.Any(e => e.DeviceId == id);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace API.Context
         public DbSet<User> Users { get; set; }
         public DbSet<Device> Devices { get; set; }
         public DbSet<UserDevice> UserDevice { get; set; }
+        public DbSet<Device> Device { get; set; }
 
 
         public override int SaveChanges()
@@ -51,7 +52,7 @@ namespace API.Context
 
             }
         }
-        public DbSet<API.Models.Device> Device { get; set; } = default!;
+
 
         public DbSet<API.Models.ActivityLog> ActivityLogs { get; set; }
     }

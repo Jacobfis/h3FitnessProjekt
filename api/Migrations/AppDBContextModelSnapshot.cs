@@ -67,13 +67,7 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("DevicesId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("DevicesId");
 
                     b.ToTable("Device");
                 });
@@ -133,17 +127,6 @@ namespace API.Migrations
                     b.HasIndex("userId");
 
                     b.ToTable("UserDevice");
-                });
-
-            modelBuilder.Entity("API.Models.Device", b =>
-                {
-                    b.HasOne("API.Models.Device", "Devices")
-                        .WithMany()
-                        .HasForeignKey("DevicesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Devices");
                 });
 
             modelBuilder.Entity("API.Models.UserDevice", b =>
