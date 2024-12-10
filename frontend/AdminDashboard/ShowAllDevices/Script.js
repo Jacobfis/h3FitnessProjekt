@@ -46,7 +46,7 @@ function updateAuthButtons() {
 }
 
 // Function to add device to UserSitSmart
-function addDeviceToUser(deviceId) {
+function addDeviceToUser(DeviceId) {
     const userId = getUserIdFromToken(token);
     
     if (!userId) {
@@ -59,7 +59,7 @@ function addDeviceToUser(deviceId) {
 
     const userDeviceData = JSON.stringify({
         userId: userId,
-        deviceId: deviceId
+        DeviceId: DeviceId
     });
 
     fetch("https://h3-fitsmart2024.onrender.com/api/UserDevice", {
