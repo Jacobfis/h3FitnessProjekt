@@ -8,7 +8,6 @@
 
     public class DeviceDataCreateDTO
     {
-        public string Id {  get; set; }
         public string DeviceId { get; set; }
         public string DeviceName { get; set; }
     }

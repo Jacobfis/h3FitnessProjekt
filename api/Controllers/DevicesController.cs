@@ -57,9 +57,9 @@ namespace API.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<DeviceDataReadDTO>> PostDevice([FromBody] DeviceDataCreateDTO deviceDto)
         {
-            // Opretter en ny Device med automatisk genereret Id fra Common
             var device = new Device
             {
+                Id = Guid.NewGuid().ToString(), // Sætter en unik værdi for Id
                 DeviceId = deviceDto.DeviceId,
                 DeviceName = deviceDto.DeviceName
             };
@@ -88,6 +88,7 @@ namespace API.Controllers
                 DeviceName = device.DeviceName
             });
         }
+
 
 
         // DELETE: api/Devices/{id}
