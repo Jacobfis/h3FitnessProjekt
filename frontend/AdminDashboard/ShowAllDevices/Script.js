@@ -62,7 +62,7 @@ function addDeviceToUser(deviceId) {
         deviceId: deviceId
     });
 
-    fetch("https://h3-fitsmart2024.onrender.com/api/UserSitSmarts", {
+    fetch("https://h3-fitsmart2024.onrender.com/api/UserDevice", {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -90,8 +90,8 @@ function getTokenExpiration(token) {
     const payload = JSON.parse(atob(payloadBase64));
     return payload.exp * 1000; // Returns as milliseconds
 }
-// Function to fetch and display SitSmart devices
-function fetchSitSmartDevices() {
+// Function to fetch and display devices
+function fetchDevices() {
     if (!token || isTokenExpired(token)) {
         localStorage.removeItem("authToken");
         alert("Session expired. Please log in again.");
@@ -104,7 +104,7 @@ function fetchSitSmartDevices() {
     headers.append("Accept", "application/json");
     headers.append("Authorization", `Bearer ${token}`);
 
-    fetch("https://h3-fitsmart2024.onrender.com/api/SitSmartDevices", { method: "GET", headers })
+    fetch("https://h3-fitsmart2024.onrender.com/api/Devices", { method: "GET", headers })
         .then(response => {
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             return response.json();
@@ -136,6 +136,6 @@ function fetchSitSmartDevices() {
 document.addEventListener("DOMContentLoaded", function() {
     updateAuthButtons();
     if (token && !isTokenExpired(token)) {
-        fetchSitSmartDevices();
+        fetchDevices();
     }
 });
