@@ -4,8 +4,8 @@
 #include <Arduino_LSM6DS3.h>
 
 // Wi-Fi
-const char* ssid = "WifiNam";
-const char* password = "WifiPassword";
+const char* ssid = "Familien.Fischer";
+const char* password = "Norregade29";
 
 // API endpoint
 const char* serverName = "h3-fitsmart2024.onrender.com";
@@ -19,7 +19,6 @@ float caloriesPerStep = 0.04;
 bool stepDetected = false;
 float threshold = 1.2; 
 unsigned long programStartTime = 0;
-unsigned long programEndTime = 0;
 bool programRunning = false;
 
 WiFiSSLClient wifiClient;
@@ -68,8 +67,7 @@ void startProgram() {
     if (!programRunning) {
         Serial.println("Fitness program started!");
         carrier.display.fillScreen(ST77XX_BLACK);
-        carrier.display.setCursor(10, 20);
-        carrier.display.print("Program Started");
+        drawCenteredText("Program Started", 60);
         programStartTime = millis();
         stepCount = 0;
         programRunning = true;
@@ -79,21 +77,32 @@ void startProgram() {
 void endProgram() {
     if (programRunning) {
         Serial.println("Fitness program ended!");
-        carrier.display.fillScreen(ST77XX_BLACK);
-        carrier.display.setCursor(10, 20);
-        carrier.display.print("Program Ended");
-        programEndTime = millis();
         programRunning = false;
 
-
-        unsigned long durationMs = programEndTime - programStartTime;
-        unsigned long durationTicks = durationMs * 10000;
-
-
+        unsigned long durationMs = millis() - programStartTime;
         float distance = stepCount * strideLength;
         float calories = stepCount * caloriesPerStep;
 
-        sendToAPI(stepCount, distance, calories, durationTicks);
+        // Beregn tid
+        int seconds = (durationMs / 1000) % 60;
+        int minutes = (durationMs / 60000);
+
+        // Vis detaljer på skærmen
+        carrier.display.fillScreen(ST77XX_BLACK);
+
+        drawCenteredText("Program Ended", 40);
+        String stepText = "Steps: " + String(stepCount);
+        String distanceText = "Dist: " + String(distance, 2) + " m";
+        String caloriesText = "Cals: " + String(calories, 2);
+        String timeText = "Time: " + String(minutes) + "m " + String(seconds) + "s";
+
+        drawCenteredText(stepText, 80);
+        drawCenteredText(distanceText, 110);
+        drawCenteredText(caloriesText, 140);
+        drawCenteredText(timeText, 170);
+
+        // Send data til API
+        sendToAPI(stepCount, distance, calories, durationMs * 10); // Omregner til ticks
     }
 }
 
@@ -105,16 +114,32 @@ void trackSteps() {
         if (z > threshold && !stepDetected) {
             stepCount++;
             stepDetected = true;
-        }
-        if (z < threshold) {
+        } else if (z < threshold) {
             stepDetected = false;
         }
-    }
 
-    carrier.display.fillScreen(ST77XX_BLACK);
-    carrier.display.setCursor(10, 10);
-    carrier.display.print("Steps: ");
-    carrier.display.print(stepCount);
+        // Beregn tid
+        unsigned long durationMs = millis() - programStartTime;
+        int seconds = (durationMs / 1000) % 60;
+        int minutes = (durationMs / 60000);
+
+        // Beregn distance og kalorier
+        float distance = stepCount * strideLength;
+        float calories = stepCount * caloriesPerStep;
+
+        // Opdater skærmen med realtidsdata
+        carrier.display.fillScreen(ST77XX_BLACK);
+
+        String stepText = "Steps: " + String(stepCount);
+        String distanceText = "Dist: " + String(distance, 2) + " m";
+        String caloriesText = "Cals: " + String(calories, 2);
+        String timeText = "Time: " + String(minutes) + "m " + String(seconds) + "s";
+
+        drawCenteredText(stepText, 40);
+        drawCenteredText(distanceText, 70);
+        drawCenteredText(caloriesText, 100);
+        drawCenteredText(timeText, 130);
+    }
 }
 
 void connectToWiFi() {
@@ -151,7 +176,6 @@ void sendToAPI(int steps, float distance, float calories, unsigned long duration
         client.print(jsonPayload);
         client.endRequest();
 
-
         int statusCode = client.responseStatusCode();
         String response = client.responseBody();
         Serial.print("Status code: ");
@@ -167,4 +191,13 @@ void sendToAPI(int steps, float distance, float calories, unsigned long duration
 String getDateTime() {
     // Test kode
     return "2024-11-27T12:00:00Z";
+}
+
+void drawCenteredText(String text, int y) {
+    int16_t x1, y1;
+    uint16_t w, h;
+    carrier.display.getTextBounds(text, 0, y, &x1, &y1, &w, &h);
+    int x = (carrier.display.width() - w) / 2;
+    carrier.display.setCursor(x, y);
+    carrier.display.print(text);
 }
