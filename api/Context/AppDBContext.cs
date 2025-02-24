@@ -16,6 +16,7 @@ namespace API.Context
         public DbSet<Device> Devices { get; set; }
         public DbSet<UserDevice> UserDevice { get; set; }
         public DbSet<Device> Device { get; set; }
+        public DbSet<Quiz> Quizzes { get; set; }
 
 
         public override int SaveChanges()

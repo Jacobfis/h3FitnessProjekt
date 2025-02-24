@@ -14,10 +14,10 @@ const int serverPort = 443;
 MKRIoTCarrier carrier;
 
 int stepCount = 0;
-float strideLength = 0.78; 
+float Length = 0.78; 
 float caloriesPerStep = 0.04; 
 bool stepDetected = false;
-float threshold = 1.2; 
+float threshold = 0.7; 
 unsigned long programStartTime = 0;
 bool programRunning = false;
 
@@ -80,7 +80,7 @@ void endProgram() {
         programRunning = false;
 
         unsigned long durationMs = millis() - programStartTime;
-        float distance = stepCount * strideLength;
+        float distance = stepCount * Length;
         float calories = stepCount * caloriesPerStep;
 
         // Beregn tid
@@ -124,7 +124,7 @@ void trackSteps() {
         int minutes = (durationMs / 60000);
 
         // Beregn distance og kalorier
-        float distance = stepCount * strideLength;
+        float distance = stepCount * Length;
         float calories = stepCount * caloriesPerStep;
 
         // Opdater skærmen med realtidsdata
